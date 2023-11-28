@@ -1,0 +1,47 @@
+html, body{
+    height: 100%;
+    margin: 0;
+  }
+  .flex-container{
+    display: flex;
+    flex-flow: column;
+    height: 100%;
+  }
+  .flex-container .header{
+    flex: 0 1 auto;
+  }
+  .flex-container .content{
+    flex: 1 1 auto;
+  }
+  .flex-container .footer{
+    flex: 0 1 auto;
+    align-items: center;
+    justify-content: center;
+  }
+  .footer>.content{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  
+  #excerciseItem {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+    font-size: 4vw;
+    font-weight: 500;
+  }
+  
+  .excerciseItem00, .excerciseItem04{
+    color: blue;
+  }
+  .excerciseItem01, .excerciseItem05{
+    color: brown;
+  }
+  .excerciseItem02, .excerciseItem06{
+    color: darkgreen;
+  }
+  .excerciseItem03, .excerciseItem07{
+    color: darkorange;
+  }

@@ -1,0 +1,25 @@
+{
+  "dependencies": {},
+  "parameters": {
+    "tavu.subscriptionId": {
+      "Name": "tavu.subscriptionId",
+      "Type": "subscription",
+      "Value": "b3982d16-ed54-4e68-8813-a3eb4436e702"
+    },
+    "tavu.resourceName": {
+      "Name": "tavu.resourceName",
+      "Type": null,
+      "Value": "tavu"
+    },
+    "tavu.resourceGroupName": {
+      "Name": "tavu.resourceGroupName",
+      "Type": "resourceGroup",
+      "Value": "tavu_group"
+    },
+    "tavu.resourceGroupLocation": {
+      "Name": "tavu.resourceGroupLocation",
+      "Type": null,
+      "Value": "polandcentral"
+    }
+  }
+}
