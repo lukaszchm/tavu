@@ -2,6 +2,6 @@
 <Project ToolsVersion="Current" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <ActiveDebugProfile>https</ActiveDebugProfile>
-    <NameOfLastUsedPublishProfile>C:\git\tavu-learn-to-read\Properties\PublishProfiles\tavu - Zip Deploy.pubxml</NameOfLastUsedPublishProfile>
+    <NameOfLastUsedPublishProfile>C:\git\tavu-learn-to-read\.github\workflows\main_tavu.yml</NameOfLastUsedPublishProfile>
   </PropertyGroup>
 </Project>

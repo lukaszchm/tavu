@@ -23,15 +23,15 @@ $(document).ready(function(){
 
 function startExcercise(rawText){
     next = parseRawText(rawText);
-    printNextItem(next());
+    printNextItem();
     $(document).keydown(function(e) {
         if (e.keyCode === 37){
             // left arrow: correct
-            printNextItem(next(true));
+            printNextItem(true);
         }
         if (e.keyCode === 39){
             // right arrow: incorrect
-            printNextItem(next(false));
+            printNextItem(false);
         }
     });
     $(document).on("click", function(event) {
@@ -39,9 +39,9 @@ function startExcercise(rawText){
         var clickPosition = event.pageX;
     
         if (clickPosition < width / 2) {
-            printNextItem(next(true));
+            printNextItem(true);
         } else {
-            printNextItem(next(false));
+            printNextItem(false);
         }
     });
 }

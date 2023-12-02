@@ -1,4 +1,5 @@
 function parseRawText(text){
+    const activeWordsLimit = 3;
     text = text.toLowerCase();
 
     // 1. Keep only word characters and whitespaces.
@@ -10,79 +11,112 @@ function parseRawText(text){
     const words = cleaned.split(/\s/).filter(Boolean);
     
     // 3. deduplicate words
-    const uniqueWords = [...new Set(words)];
+    let wordsQueue = [...new Set(words)];
 
-    // 4. create two way sylab<->word mappings
-    let wordToSylabs = {};
-    let sylabToWords = {};
-    for (let word of uniqueWords){
-        const sylabs = splitIntoSylabs(word);
-        wordToSylabs[word] = sylabs;
-        for (let sylab of sylabs){
-            if (sylabToWords[sylab]) {
-                sylabToWords[sylab].push(word);
-            }
-            else {
-                sylabToWords[sylab] = [word];
-            }
+    // 4. create mappings
+    let sylabs = {};
+    _.each(wordsQueue, function(word){
+        const s = splitIntoSylabs(word);
+        sylabs[word] = s;
+    });
+
+    let activeWords = new Set();
+    let completedItems = new Set();
+
+    function activateWord(word, forceReactivate){
+        activeWords.add(word);
+        if (forceReactivate === true){
+            completedItems.delete(word);
+            _.each(sylabs[word], function(sylab){
+                completedItems.delete(sylab);
+            });
         }
     }
 
-    let queue = new Set(Object.keys(sylabToWords));
-    let previousItem = null;
+    function completeItem(item){
+        completedItems.add(item);
+        if (activeWords.has(item)){
+            // completed item is a word
+            // remove it from the active words list
+            activeWords.delete(item);
+
+            const firstItem = wordsQueue[0];
+            wordsQueue = _.drop(wordsQueue);
+            activateWord(firstItem);
+
+            // then put it back to the queue after the next unpracticed word
+            const lastCompletedIndex = _.findLastIndex(wordsQueue, function(w){
+                return completedItems.has(w);
+            });
+            let indexToInsert = lastCompletedIndex + 2;
+            if (indexToInsert < wordsQueue.length){
+                wordsQueue.splice(indexToInsert, 0, item);
+            } else {
+                wordsQueue.push(item);
+            }
+
+            
+        }
+    }
+
+    for (let i = 0; i < activeWordsLimit; i++){
+        const firstItem = wordsQueue[0];
+        wordsQueue = _.drop(wordsQueue);
+        activateWord(firstItem);
+    }
+
+    let previousItem;
 
     function next(result){
-        const previousItemIsWord = wordToSylabs[previousItem];
-        const previousItemIsSylab = sylabToWords[previousItem];
+        const previousItemIsWord = sylabs[previousItem];
 
         if (result === true){
-            if (previousItemIsSylab){
-                // check if it is the last sylab for any word
-                // to do that:
-
-                // 1. mark previous item as completed by removing it from the queue
-                queue.delete(previousItem);
-                
-                // 2. finished are all words that contain previous item
-                // that have all sylabs marked as completed (none of it's sylabs is in the queue)
-                const finishedWords = sylabToWords[previousItem].filter(function(word){
-                    return !wordToSylabs[word].some(function (sylab){ return queue.has(sylab); });
-                });
-
-                // add all finished words to the queue
-                // but don't do it if it's a one one-sylab word
-                // it's probably a simple word
-                for (let finishedWord of finishedWords){
-                    if (finishedWord !== previousItem) {
-                        queue.add(finishedWord);
-                    }
-                }
-            }
-            // else: if previous item was a word and it was correct we don't remove it from the queue
-            // we keep practicing it
-        } else if (result === false){
-            if (previousItemIsWord){
-                // when word was not correct we retun all it's sylabs to the queue
-                // and remove the word from the queue
-                queue.delete(previousItem);
-                for (let sylab of wordToSylabs[previousItem]){
-                    queue.add(sylab);
-                }
-            }
-            // else: if previous item was a sylab we keep it in the queue and do nothing
-        } else {
-            // result is undefined, it's the first call
-            // do nothing
+            completeItem(previousItem);
+        } else if (result === false && previousItemIsWord) {
+            activateWord(previousItem, true);
         }
 
-        const queueArray = Array.from(queue);
-        const nextItem = queueArray[Math.floor(Math.random() * queueArray.length)];
-        previousItem = nextItem;
+        var nextItemsPool = _.flatMap([...activeWords], function(word){
+            var itemsToAdd = [];
+            _.each(sylabs[word], function(sylab){
+                if (!completedItems.has(sylab)){
+                    itemsToAdd.push(sylab);
+                }
+            });
 
-        return splitIntoSylabs(nextItem);
+            if (itemsToAdd.length === 0){
+                return [word];
+            } else {
+                return itemsToAdd;
+            }
+        });
+
+        let newItem;
+        do {
+            newItem = nextItemsPool[_.random(nextItemsPool.length - 1)];
+        } while (newItem === previousItem)
+        console.log(nextItemsPool);
+        console.log(wordsQueue); 
+        console.log(completedItems);  
+        previousItem = newItem;
+
+        return splitIntoSylabs(newItem);
     }
 
     return next;
+}
+
+function insertAfter(array, itemToInsert, predicate){
+    let index = array.findIndex(predicate);
+    
+    if (index !== -1) {
+        // if an item meeting the condition is found, insert after that item
+        array.splice(index + 1, 0, itemToInsert);
+    } else {
+        // if no item meets the condition, add at the end
+        array.push(itemToInsert);
+    }
+    return array;
 }
 
 function splitIntoSylabs(word){
