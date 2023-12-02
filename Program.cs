@@ -47,14 +47,8 @@ app.UseRouting();
 app.UseAuthentication();
 app.UseAuthorization();
 
+app.UseStaticFiles();
 
-
-app.UseStaticFiles(new StaticFileOptions
-    {
-        FileProvider = new PhysicalFileProvider(
-            Path.Combine(app.Environment.ContentRootPath, "assets")),
-        RequestPath = "/assets"
-    });
 app.MapFallbackToFile("/index.html");
 
 if (app.Environment.IsDevelopment())

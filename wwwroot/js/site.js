@@ -17,24 +17,12 @@ function printNextItem(correct){
 }
 
 $(document).ready(function(){
-    fetchWords();
-    $(document).keydown(function(e) {
-        if (e.keyCode === 37){
-            // left arrow: correct
-            printNextItem(true);
-        }
-        if (e.keyCode === 39){
-            // right arrow: incorrect
-            printNextItem(false);
-        }
-    });
-    $(window).on("swipeleft", () => printNextItem(true));  
-    $(window).on("swiperight", () => printNextItem(false));  
+    fetchWords();    
 });
 
 
-function startExcercise(rawTet){
-    next = parseRawText(rawTet);
+function startExcercise(rawText){
+    next = parseRawText(rawText);
     printNextItem(next());
     $(document).keydown(function(e) {
         if (e.keyCode === 37){
@@ -43,6 +31,16 @@ function startExcercise(rawTet){
         }
         if (e.keyCode === 39){
             // right arrow: incorrect
+            printNextItem(next(false));
+        }
+    });
+    $(document).on("click", function(event) {
+        var width = $(document).width();
+        var clickPosition = event.pageX;
+    
+        if (clickPosition < width / 2) {
+            printNextItem(next(true));
+        } else {
             printNextItem(next(false));
         }
     });
